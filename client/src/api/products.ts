@@ -43,7 +43,10 @@ export async function fetchProducts(query: ProductsQuery, signal?: AbortSignal) 
   params.set("page", String(query.page));
   params.set("limit", String(query.limit));
 
-  const result = await fetch(`/api/products?${params.toString()}`, { signal });
+  const base = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+  const url = base ? `${base}/api/products?${params.toString()}` : `/api/products?${params.toString()}`;
+  const result = await fetch(url, { signal });
+  
   if (!result.ok) {
     const text = await result.text().catch(() => "");
     throw new Error(`HTTP ${result.status} ${text}`);
